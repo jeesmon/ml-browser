@@ -2,6 +2,8 @@ javascript:(function () {
 
 var malayalamUnicodeStart = 3328;
 var malayalamUnicodeEnd = 3455;
+var isThoolika = false;
+var isPeopleTv = false;
 
 /**
  * Character Mapping
@@ -121,6 +123,13 @@ com_jeesmon_apps_browser_fontfix();
 
 function com_jeesmon_apps_browser_fontfix(){	
 	if(location.href && document.getElementsByTagName("HEAD")[0] && document.getElementsByTagName("BODY")[0]){
+		var site = location.href.toLowerCase();
+		if(site.indexOf("keralakaumudi") != -1) {
+			isThoolika = true;
+		}
+		else if(site.indexOf("peopletv.in") != -1) {
+			isPeopleTv = true;
+		}
 		replaceInTextNodes(document.body);	
 	}
 }
@@ -131,8 +140,18 @@ function com_jeesmon_apps_browser_fontfix(){
  
 function injectCSS(){
 	var cssStatus = false;
-	var	css = 
-	'@font-face {font-family: "AnjaliOldLipi"; src: url(http://jeesmon.csoft.net/fonts/AnjaliOldLipi.ttf);} com_jeesmon_apps_browser {font-family: "AnjaliOldLipi"; font-size: 120%}';
+	var	css = "";
+	
+	if(isThoolika) {
+		css = '@font-face {font-family: "Thoolika"; src: url(http://jeesmon.csoft.net/fonts/thoolika.ttf);} com_jeesmon_apps_browser {font-family: "Thoolika"; font-size: 120%}';
+	}
+	else if(isPeopleTv) {
+		css = '@font-face {font-family: "MLBW-TTRevathi"; src: url(http://jeesmon.csoft.net/fonts/kairali-people.ttf);} com_jeesmon_apps_browser {font-family: "MLBW-TTRevathi"; font-size: 120%}';
+	}
+	else {
+		css = '@font-face {font-family: "AnjaliOldLipi"; src: url(http://jeesmon.csoft.net/fonts/AnjaliOldLipi.ttf);} com_jeesmon_apps_browser {font-family: "AnjaliOldLipi"; font-size: 120%}';
+	}
+	
 	if(document.getElementsByTagName("style")[0]){
 		var style = document.getElementsByTagName("style")[0];	
 		for (var child=style.firstChild; child!==null; child=child.nextSibling) {
@@ -169,22 +188,29 @@ function replaceInTextNodes(parent) {
 		}
 		
 		else if (child.nodeType===3) { //Text_Node
-		    var text = child.data;
-		    
-		    var mlen = mappings.length;
-		    
-		    for (i=0; i<text.length; i++){
-		    
-  				if (text.charCodeAt(i)>= malayalamUnicodeStart && text.charCodeAt(i)<= malayalamUnicodeEnd){
-  					injectCSS();
-  					for (i=0;i<mlen;i++) {
-  						var unicode = new RegExp(mappings[i][0], "g");
-  						text = text.replace(unicode, mappings[i][1]);
-  					}
-					var com_jeesmon_apps_browser = document.createElement("com_jeesmon_apps_browser");
-					com_jeesmon_apps_browser.appendChild(document.createTextNode(text));
-					parent.replaceChild(com_jeesmon_apps_browser, child);
-					break;
+			if(isThoolika || isPeopleTv) {
+		    	injectCSS();
+				var com_jeesmon_apps_browser = document.createElement("com_jeesmon_apps_browser");
+				com_jeesmon_apps_browser.appendChild(document.createTextNode(text));
+				parent.replaceChild(com_jeesmon_apps_browser, child);
+		    }
+		    else {
+			    var text = child.data;
+			    var mlen = mappings.length;
+			    
+			    for (i=0; i<text.length; i++){
+			    
+	  				if (text.charCodeAt(i)>= malayalamUnicodeStart && text.charCodeAt(i)<= malayalamUnicodeEnd){
+	  					injectCSS();
+	  					for (i=0;i<mlen;i++) {
+	  						var unicode = new RegExp(mappings[i][0], "g");
+	  						text = text.replace(unicode, mappings[i][1]);
+	  					}
+						var com_jeesmon_apps_browser = document.createElement("com_jeesmon_apps_browser");
+						com_jeesmon_apps_browser.appendChild(document.createTextNode(text));
+						parent.replaceChild(com_jeesmon_apps_browser, child);
+						break;
+					}
 				}
 			}
 		}
@@ -201,23 +227,30 @@ function replaceInUrlNodes(parent) {
 		}
 		
 		else if (child.nodeType===3) { //Text_Node
-		    var text = child.data;
-		    
-		    var mlen = mappings.length;
-		    
-		    for (i=0; i<text.length; i++){
-		    
-  				if (text.charCodeAt(i)>= malayalamUnicodeStart && text.charCodeAt(i)<= malayalamUnicodeEnd){
-  					injectCSS();
-  					for (i=0;i<mlen;i++) {
-  						var unicode = new RegExp(mappings[i][0], "g");
-  						text = text.replace(unicode, mappings[i][1]);
-  					}
-					var com_jeesmon_apps_browser = document.createElement("com_jeesmon_apps_browser");
-					com_jeesmon_apps_browser.appendChild(document.createTextNode(text));
-					parent.replaceChild(com_jeesmon_apps_browser, child);
-					break;
-				}
+			if(isThoolika || isPeopleTv) {
+				injectCSS();
+				var com_jeesmon_apps_browser = document.createElement("com_jeesmon_apps_browser");
+				com_jeesmon_apps_browser.appendChild(document.createTextNode(text));
+				parent.replaceChild(com_jeesmon_apps_browser, child);
+			}
+			else {
+			    var text = child.data;
+			    var mlen = mappings.length;
+			    
+			    for (i=0; i<text.length; i++){
+			    
+	  				if (text.charCodeAt(i)>= malayalamUnicodeStart && text.charCodeAt(i)<= malayalamUnicodeEnd){
+	  					injectCSS();
+	  					for (i=0;i<mlen;i++) {
+	  						var unicode = new RegExp(mappings[i][0], "g");
+	  						text = text.replace(unicode, mappings[i][1]);
+	  					}
+						var com_jeesmon_apps_browser = document.createElement("com_jeesmon_apps_browser");
+						com_jeesmon_apps_browser.appendChild(document.createTextNode(text));
+						parent.replaceChild(com_jeesmon_apps_browser, child);
+						break;
+					}
+	  			}
   			}
 		}
 	}
